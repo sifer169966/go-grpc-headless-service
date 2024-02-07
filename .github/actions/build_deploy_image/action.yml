@@ -26,8 +26,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - run: |
-        echo -n ${{ inputs.gcr-credential }} | docker login -u _json_key_base64 --password-stdin \ ${{ inputs.base-repository-url }}
+    - name: Docker login
+      run: echo -n ${{ inputs.gcr-credential }} | docker login -u _json_key_base64 --password-stdin \ ${{ inputs.base-repository-url }}
+    - name: Docker Build
+      run: |
         tag_name=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown version" );
         if [ "$tag_name" == "unknown version" ]; then
             echo "Error: Unable to determine the version."
