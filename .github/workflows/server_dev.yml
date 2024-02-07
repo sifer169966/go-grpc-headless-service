@@ -1,7 +1,7 @@
 name: Pipeline for DEV environment
 on:
   push:
-    paths: [server/**]
+    paths: [server/**, ./github/**]
     branches: [develop, master]
 env:
   APP_ENV: dev
@@ -9,10 +9,9 @@ env:
 
 jobs:
   create_app_artifacts:
-    runs-on: ubuntu-latest
-    environment: ${{ env.APP_ENV }}
     name: The entry point to trigger related jobs to satisfy this pipeline
-    # if: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
+    runs-on: ubuntu-latest
+    environment: $APP_ENV
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,8 +21,8 @@ jobs:
         id: build-publish-image
         uses:  ./.github/actions/build_deploy_image
         with:
-          environment: ${{ env.ENV }}
-          docker-file: ${{ github.workspace }}/client/Dockerfile
-          base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
-          image-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
-        secrets: inherit
+            environment: ${{ env.ENV }}
+            docker-file: ${{ github.workspace }}/client/Dockerfile
+            base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
+            image-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
+            gcr-credential: ${{ secrets.GCR_CREDENTIAL }}
