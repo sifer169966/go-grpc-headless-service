@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
       - name: Build and publish image
         id: build-publish-image
-        uses:  ./.github/workflows/build_deploy_image.yml
+        uses:  ./.github/actions/build_deploy_image
         with:
           environment: ${{ env.ENV }}
           docker-file: ${{ github.workspace }}/client/Dockerfile
