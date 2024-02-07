@@ -38,7 +38,7 @@ runs:
         docker build --no-cache --progress=plain \
         -t "$image_base_url:$tag_name" \
         -t "$image_base_url:latest" \
-        -f ${{ inputs.docker-file }} ${{ docker-context }}
+        -f ${{ inputs.docker-file }} ${{ inputs.docker-context }}
 
         # push all tags for in context images
         docker push ${{ inputs.image-url }} --all-tags
