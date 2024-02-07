@@ -27,7 +27,7 @@ runs:
   using: "composite"
   steps:
     - name: Docker login
-      run: echo ${{ inputs.gcr-credential }} | docker login -u _json_key_base64 --password-stdin \ ${{ inputs.base-repository-url }}
+      run: echo ${{ inputs.gcr-credential }} \| docker login -u _json_key_base64 --password-stdin \ ${{ inputs.base-repository-url }}
       shell: bash
     - name: Docker Build
       run: |
