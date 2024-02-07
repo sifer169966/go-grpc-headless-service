@@ -38,7 +38,6 @@ func Init() error {
 	return nil
 }
 
-// Get is use for export private variable which is config ...
 func Get() *Config {
 	return &config
 }
