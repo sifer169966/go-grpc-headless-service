@@ -15,7 +15,7 @@ jobs:
   create_app_artifacts:
     name: The entry point to trigger related jobs to satisfy this pipeline
     runs-on: ubuntu-latest
-    environment: $APP_ENV
+    environment: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
