@@ -27,6 +27,7 @@ jobs:
         with:
             environment: ${{ env.ENV }}
             docker-file: ${{ github.workspace }}/client/Dockerfile
+            docker-context: ${{ github.workspace }}
             base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
             image-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
             gcr-credential: ${{ secrets.GCR_CREDENTIAL }}
