@@ -1,8 +1,12 @@
 name: Pipeline for DEV environment
 on:
-  push:
-    paths: [server/**, ./github/**]
-    branches: [develop, master]
+    push:
+      paths:
+          - client/**
+          - ./github/**
+      branches:
+          - develop
+          - master
 env:
   APP_ENV: dev
   APP_NAME: go-grpc-headless-service-server
