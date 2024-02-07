@@ -3,7 +3,7 @@ on:
   push:
     paths:
         - client/**
-        - ./github/**
+        - .github/**
     branches:
         - develop
         - master

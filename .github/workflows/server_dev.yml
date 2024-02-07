@@ -2,8 +2,8 @@ name: Pipeline for DEV environment
 on:
     push:
       paths:
-          - client/**
-          - ./github/**
+          - server/**
+          - .github/**
       branches:
           - develop
           - master
