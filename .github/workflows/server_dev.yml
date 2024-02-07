@@ -8,14 +8,15 @@ on:
           - develop
           - master
 env:
-  APP_ENV: dev
   APP_NAME: go-grpc-headless-service-server
 
 jobs:
   create_app_artifacts:
     name: The entry point to trigger related jobs to satisfy this pipeline
     runs-on: ubuntu-latest
-    environment: $APP_ENV
+    environment: dev
+    env:
+        APP_ENV: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,8 +26,8 @@ jobs:
         id: build-publish-image
         uses:  ./.github/actions/build_deploy_image
         with:
-            environment: ${{ env.ENV }}
-            docker-file: ${{ github.workspace }}/client/Dockerfile
+            environment: ${{ env.APP_ENV }}
+            docker-file: ${{ github.workspace }}/server/Dockerfile
             docker-context: ${{ github.workspace }}
             base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
             image-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}

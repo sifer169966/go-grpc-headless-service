@@ -8,7 +8,6 @@ on:
         - develop
         - master
 env:
-  APP_ENV: dev
   APP_NAME: go-grpc-headless-service-client
 
 jobs:
@@ -16,6 +15,8 @@ jobs:
     name: The entry point to trigger related jobs to satisfy this pipeline
     runs-on: ubuntu-latest
     environment: dev
+    env:
+        APP_ENV: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
