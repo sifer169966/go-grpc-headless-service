@@ -1,0 +1,22 @@
+syntax = "proto3";
+package main;
+option go_package = "github.com/sifer169966/go-grpc-client-lb/server/apis/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message CreateDeviceInteractionRequest {
+    google.protobuf.Timestamp timestamp = 1;
+    GeoLocation localtion = 2;
+    repeated Device devices = 3;
+
+}
+
+message GeoLocation {
+    string latitude = 1;
+    string longitude = 2;
+}
+
+message Device {
+    string id = 1;
+    string name = 2;
+}

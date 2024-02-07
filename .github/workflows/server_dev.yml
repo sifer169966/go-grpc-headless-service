@@ -1,0 +1,29 @@
+name: Pipeline for DEV environment
+on:
+  push:
+    paths: [server/**]
+    branches: [develop, master]
+env:
+  APP_ENV: dev
+  APP_NAME: go-grpc-headless-service-server
+
+jobs:
+  create_app_artifacts:
+    runs-on: ubuntu-latest
+    environment: ${{ env.APP_ENV }}
+    name: The entry point to trigger related jobs to satisfy this pipeline
+    # if: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Build and publish image
+        id: build-publish-image
+        uses:  ./.github/workflows/build_deploy_image.yml
+        with:
+          environment: ${{ env.ENV }}
+          docker-file: ${{ github.workspace }}/client/Dockerfile
+          base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
+          image-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
+        secrets: inherit

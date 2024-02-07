@@ -1,0 +1,41 @@
+inputs:
+  environment:
+    type: string
+    required: true
+    description: environemnt in context
+  base-repository-url:
+    type: string
+    required: true
+    description: URL to artifacts repository
+  image-url:
+    type: string
+    required: true
+    description: application artifacts URL
+  docker-file:
+    type: string
+    required: true
+    description: target Dockerfile to apply in this workflows
+  docker-context:
+    type: string
+    required: true
+    description: docker context
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo -n ${{ secrets.GCR_CREDENTIAL }} | docker login -u _json_key_base64 --password-stdin ${{ inputs.base-repository-url }}
+        tag_name=$(git describe --tags 2>/dev/null || git rev-parse --short HEAD 2>/dev/null || echo "unknown version" );
+        if [ "$tag_name" == "unknown version" ]; then
+            echo "Error: Unable to determine the version."
+            exit 1
+        fi
+
+        # build in context images
+        docker build --no-cache --progress=plain \
+        -t "$image_base_url:$tag_name" \
+        -t "$image_base_url:latest" \
+        -f ${{ inputs.docker-file }} ${{ docker-context }}
+
+        # push all tags for in context images
+        docker push ${{ inputs.image-url }} --all-tags
+      shell: bash

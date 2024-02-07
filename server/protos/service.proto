@@ -1,0 +1,10 @@
+syntax = "proto3";
+package main;
+option go_package = "github.com/sifer169966/go-grpc-client-lb/server/apis/pb";
+
+import "google/protobuf/empty.proto";
+import "dto.proto";
+
+service DeviceInteractionService {
+    rpc CreateDeviceInteraction(main.CreateDeviceInteractionRequest) returns(google.protobuf.Empty);
+}
