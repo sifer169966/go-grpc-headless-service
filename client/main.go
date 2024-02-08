@@ -45,6 +45,7 @@ func main() {
 }
 
 func tryClient(c pb.DeviceInteractionServiceClient) error {
+	id := uuid.NewString()
 	payload := &pb.CreateDeviceInteractionRequest{
 		Timestamp: timestamppb.New(time.Now()),
 		Localtion: &pb.GeoLocation{
@@ -53,12 +54,12 @@ func tryClient(c pb.DeviceInteractionServiceClient) error {
 		},
 		Devices: []*pb.Device{
 			{
-				Id:   uuid.NewString(),
+				Id:   id,
 				Name: "Monkey D Luffer",
 			},
 		},
 	}
-	log.Println("calling to grpc server ...")
+	log.Println("calling to grpc server with id ", id)
 	_, err := c.CreateDeviceInteraction(context.Background(), payload)
 	if err != nil {
 		log.Println(err)
