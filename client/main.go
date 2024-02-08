@@ -19,9 +19,10 @@ import (
 func main() {
 	config.Init()
 	srv := echo.New()
-	serverHost := fmt.Sprintf("%s:%s", config.Get().GRPClient.ServerHost, config.Get().GRPClient.ServerPort)
+	serverHost := fmt.Sprintf("dns:///%s:%s", config.Get().GRPClient.ServerHost, config.Get().GRPClient.ServerPort)
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	opts = append(opts, grpc.WithDefaultServiceConfig(`{"loadBalancingConfig": [{"round_robin":{}}]}`))
 	conn, err := grpc.Dial(serverHost, opts...)
 	if err != nil {
 		panic(err)
@@ -31,8 +32,10 @@ func main() {
 	srv.GET("/healthz", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "device-interactions service is running.")
 	})
-	srv.GET("/test", func(c echo.Context) error {
-		err := tryClient(client)
+	srv.GET("/try", func(c echo.Context) error {
+		id := uuid.NewString()
+		log.Printf("ID=%s STATE=%s TARGET=%s\n", id, conn.GetState().String(), conn.Target())
+		err := tryClient(id, client)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
@@ -44,8 +47,7 @@ func main() {
 	}
 }
 
-func tryClient(c pb.DeviceInteractionServiceClient) error {
-	id := uuid.NewString()
+func tryClient(id string, c pb.DeviceInteractionServiceClient) error {
 	payload := &pb.CreateDeviceInteractionRequest{
 		Timestamp: timestamppb.New(time.Now()),
 		Localtion: &pb.GeoLocation{
@@ -59,12 +61,12 @@ func tryClient(c pb.DeviceInteractionServiceClient) error {
 			},
 		},
 	}
-	log.Println("calling to grpc server with id ", id)
+	log.Println("calling to grpc server with id= ", id)
 	_, err := c.CreateDeviceInteraction(context.Background(), payload)
 	if err != nil {
-		log.Println(err)
+		log.Printf("error: from id=%s\n", err.Error(), id)
 		return err
 	}
-	log.Println(" success response from grpc server ...")
+	log.Println(" success response from grpc server with id=", id)
 	return nil
 }
