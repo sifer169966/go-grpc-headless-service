@@ -44,4 +44,12 @@ This demo is publish the application artifact on GCR, so, we have to export some
 - deploy ingress by applying `microk8s apply -f ./client/ingress.yml -n <app_namespace>`
 - run `envsubst < ./client/deployment.yml | microk8s -n <app_namespace> apply -f -`
 - run `envsubst < ./server/deployment.yml | microk8s -n <app_namespace> apply -f -`
+- mapping the ingress hosts into the known hosts file at `/etc/hosts` for instance, 
+    ```
+    127.0.0.1 localhost
+    10.123.1.1 demo-grpc-srv.test
+    10.123.1.1 demo-grpc-srv.me
+    10.123.1.1 go-grpc-headless-service-client.demo
 
+    # 10.123.1.1 is my private network interface that maps with my LB service
+    ```
