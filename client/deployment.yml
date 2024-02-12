@@ -27,7 +27,7 @@ spec:
           - name: APP_REST_PORT
             value: "8080"
           - name: GRPC_CLIENT_SERVER_HOST
-            value: "go-grpc-headless-server.demo-headless.svc.cluster.local"
+            value: "go-grpc-headless-service-server.demo-headless.svc.cluster.local"
           - name: GRPC_CLIENT_SERVER_PORT
             value: "80"
         livenessProbe:
