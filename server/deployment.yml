@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/name: go-grpc-headless-service-server
     name: go-grpc-headless-service-server
 spec:
+  cluster: None
   replicas: 3
   selector:
     matchLabels:
