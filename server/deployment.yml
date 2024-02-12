@@ -6,7 +6,6 @@ metadata:
     app.kubernetes.io/name: go-grpc-headless-service-server
     name: go-grpc-headless-service-server
 spec:
-  cluster: None
   replicas: 3
   selector:
     matchLabels:
@@ -44,6 +43,7 @@ metadata:
   labels:
     app.kubernetes.io/name: go-grpc-headless-service-server
 spec:
+  clusterIP: None
   selector:
     app.kubernetes.io/name: go-grpc-headless-service-server
   ports:
@@ -55,4 +55,3 @@ spec:
     port: 443
     protocol: TCP
     targetPort: 8080
-  type: ClusterIP
