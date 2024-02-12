@@ -64,7 +64,7 @@ func tryClient(id string, c pb.DeviceInteractionServiceClient) error {
 	log.Println("calling to grpc server with id= ", id)
 	_, err := c.CreateDeviceInteraction(context.Background(), payload)
 	if err != nil {
-		log.Printf("error: from id=%s\n", err.Error(), id)
+		log.Printf("error: %s from id=%s\n", err.Error(), id)
 		return err
 	}
 	log.Println(" success response from grpc server with id=", id)
