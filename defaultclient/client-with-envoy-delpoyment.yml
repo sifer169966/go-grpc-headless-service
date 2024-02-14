@@ -23,22 +23,22 @@ spec:
         ports:
           - name: tcp
             containerPort: 8080
-      - name: envoy-proxy
-        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-envoystatic/dev:latest
-        restartPolicy: Never
         env:
           - name: APP_REST_PORT
             value: "8080"
           - name: GRPC_CLIENT_SERVER_HOST
-            value: "go-grpc-headless-service-server.demo-headless.svc.cluster.local"
+            value: "localhost"
           - name: GRPC_CLIENT_SERVER_PORT
-            value: "8080"
+            value: "10000"
         livenessProbe:
           httpGet:
             path: /healthz
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
+      - name: envoy-proxy
+        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-envoystatic/dev:latest
+        restartPolicy: Never
 
 
 ---
