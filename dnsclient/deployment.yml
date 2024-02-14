@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-grpc-headless-service-client
+  name: go-grpc-dnsclient
   labels:
-    app.kubernetes.io/name: go-grpc-headless-service-client
-    name: go-grpc-headless-service-client
+    app.kubernetes.io/name: go-grpc-dnsclient
+    name: go-grpc-dnsclient
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: go-grpc-headless-service-client
+      app.kubernetes.io/name: go-grpc-dnsclient
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: go-grpc-headless-service-client
+        app.kubernetes.io/name: go-grpc-dnsclient
     spec:
       restartPolicy: Always
       containers:
-      - name: go-grpc-headless-service-client
-        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/go-grpc-headless-service-client/dev:latest
+      - name: go-grpc-dnsclient
+        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/go-grpc-dnsclient/dev:latest
         imagePullPolicy: Always
         ports:
           - name: tcp
@@ -43,12 +43,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: go-grpc-headless-service-client
+  name: go-grpc-dnsclient
   labels:
-    app.kubernetes.io/name: go-grpc-headless-service-client
+    app.kubernetes.io/name: go-grpc-dnsclient
 spec:
   selector:
-    app.kubernetes.io/name: go-grpc-headless-service-client
+    app.kubernetes.io/name: go-grpc-dnsclient
   ports:
   - name: http
     port: 80

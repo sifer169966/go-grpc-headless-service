@@ -20,7 +20,7 @@
 - run `microk8s enable ingress`
 - run `microk8s apply -f ingress-lb-service.yml`
 - setup private registry
-    - vim `/var/snap/microk8s/current/args/containerd-template.toml`
+    - `vim /var/snap/microk8s/current/args/containerd-template.toml`
     - add this section at the end of file
     ```
     # private repository
@@ -35,21 +35,31 @@
             email = "example@gmail.com"
     ```
 ## setup environment
-This demo is publish the application artifact on GCR, so, we have to export some variables for the deployment files
+This demo uses GCR as a private registry, so, we have to export some variables for the deployment files
 - `export ARTIFACT_REGION=<REGION>`
 - `export ARTIFACT_PROJECT_ID=<PROJECT_ID>`
 
 
-# Example 1: Round Robin Loadbalancing with gRPC's built-in loadbalancing policy
-- deploy ingress by applying `microk8s apply -f ./client/ingress.yml -n <app_namespace>`
-- run `envsubst < ./client/deployment.yml | microk8s -n <app_namespace> apply -f -`
+# Example 1: Retrive IPs via DNS and use Round Robin Loadbalancing with gRPC's built-in loadbalancing policy
+- deploy ingress by applying `microk8s apply -f ./dnsclient/ingress.yml -n <app_namespace>`
+- run `envsubst < ./dnsclient/deployment.yml | microk8s -n <app_namespace> apply -f -`
 - run `envsubst < ./server/deployment.yml | microk8s -n <app_namespace> apply -f -`
 - mapping the ingress hosts into the known hosts file at `/etc/hosts` for instance, 
     ```
     127.0.0.1 localhost
-    10.123.1.1 demo-grpc-srv.test
-    10.123.1.1 demo-grpc-srv.me
-    10.123.1.1 go-grpc-headless-service-client.demo
+    10.123.1.1 go-grpc-dnsclient.demo
+
+    # 10.123.1.1 is my private network interface that maps with my LB service
+    ```
+
+# Example 2: Retrive IPs via DNS and use Round Robin Loadbalancing with statically configured Envoy proxy
+- deploy ingress by applying `microk8s apply -f ./defaultclient/ingress.yml -n <app_namespace>`
+- run `envsubst < ./defaultclient/client-with-envoy-deloyment.yml | microk8s -n <app_namespace> apply -f -`
+- run `envsubst < ./server/deployment.yml | microk8s -n <app_namespace> apply -f -`
+- mapping the ingress hosts into the known hosts file at `/etc/hosts` for instance, 
+    ```
+    127.0.0.1 localhost
+    10.123.1.1 go-grpc-defaultclient-with-envoy.demo
 
     # 10.123.1.1 is my private network interface that maps with my LB service
     ```

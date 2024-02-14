@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 	serverHost := fmt.Sprintf("%s:%s", config.Get().App.GRPCHost, config.Get().App.GRPCPort)
-	lis, err := net.Listen("tcp", serverHost)
+	lis, err := net.Listen("tcp4", serverHost)
 	if err != nil {
 		panic(err)
 	}

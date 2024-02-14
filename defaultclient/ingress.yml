@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-grpc-defaultclient-ingress
+spec:
+  ingressClassName: public
+  rules:
+  - host: go-grpc-defaultclient.demo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: go-grpc-defaultclient
+            port:
+              number: 80
+  - host: go-grpc-defaultclient-with-envoy.demo
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: go-grpc-defaultclient-with-envoy
+            port:
+              number: 80

@@ -2,13 +2,13 @@ name: Pipeline for DEV environment
 on:
   push:
     paths:
-        - client/**
+        - envoystatic/**
         - .github/**
     branches:
         - develop
         - master
 env:
-  APP_NAME: go-grpc-headless-service-client
+  APP_NAME: grpc-envoystatic
 
 jobs:
   create_app_artifacts:
@@ -27,7 +27,7 @@ jobs:
         uses:  ./.github/actions/build_deploy_image
         with:
           environment: ${{ env.APP_ENV }}
-          docker-file: ${{ github.workspace }}/client/Dockerfile
+          docker-file: ${{ github.workspace }}/envoystatic/Dockerfile
           docker-context: ${{ github.workspace }}
           base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
           image-url: ${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}

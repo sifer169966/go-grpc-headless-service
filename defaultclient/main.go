@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/sifer169966/go-grpc-client-lb/client/config"
+	"github.com/sifer169966/go-grpc-client-lb/dnsclient/config"
 	"github.com/sifer169966/go-grpc-client-lb/server/apis/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -19,10 +19,9 @@ import (
 func main() {
 	config.Init()
 	srv := echo.New()
-	serverHost := fmt.Sprintf("dns:///%s:%s", config.Get().GRPClient.ServerHost, config.Get().GRPClient.ServerPort)
+	serverHost := fmt.Sprintf("%s:%s", config.Get().GRPClient.ServerHost, config.Get().GRPClient.ServerPort)
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	opts = append(opts, grpc.WithDefaultServiceConfig(`{"loadBalancingConfig": [{"round_robin":{}}]}`))
 	conn, err := grpc.Dial(serverHost, opts...)
 	if err != nil {
 		panic(err)
@@ -30,7 +29,7 @@ func main() {
 	defer conn.Close()
 	client := pb.NewDeviceInteractionServiceClient(conn)
 	srv.GET("/healthz", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "device-interactions service is running.")
+		return c.JSON(http.StatusOK, "defaultclient service is running.")
 	})
 	srv.GET("/try", func(c echo.Context) error {
 		id := uuid.NewString()
@@ -39,7 +38,7 @@ func main() {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
-		return c.JSON(http.StatusOK, "device-interactions service is running.")
+		return c.JSON(http.StatusOK, "success")
 	})
 	err = srv.Start(":" + config.Get().App.RESTPort)
 	if err != nil && err != http.ErrServerClosed {
