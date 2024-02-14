@@ -23,6 +23,9 @@ spec:
         ports:
           - name: tcp
             containerPort: 8080
+      - name: envoy-proxy
+        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-envoystatic/dev:latest
+        restartPolicy: Never
         env:
           - name: APP_REST_PORT
             value: "8080"
