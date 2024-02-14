@@ -30,7 +30,6 @@ static_resources:
                 route: { cluster: device_interaction_grpc_service }
           http_filters:
           - name: envoy.router
-            config: {}
   clusters:
   - name: device_interaction_grpc_service
     connect_timeout: 5s
@@ -39,7 +38,7 @@ static_resources:
     dns_lookup_family: V4_ONLY
     http2_protocol_options: { }
     load_assignment:
-      cluster_name: bookstore-service
+      cluster_name: device_interaction_grpc_service
       endpoints:
       - lb_endpoints:
         - endpoint:
