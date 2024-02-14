@@ -54,7 +54,7 @@ This demo uses GCR as a private registry, so, we have to export some variables f
 
 # Example 2: Retrive IPs via DNS and use Round Robin Loadbalancing with statically configured Envoy proxy
 - deploy ingress by applying `microk8s apply -f ./defaultclient/ingress.yml -n <app_namespace>`
-- run `envsubst < ./defaultclient/client-with-envoy-deloyment.yml | microk8s -n <app_namespace> apply -f -`
+- run `envsubst < ./defaultclient/client-with-envoy-deployment.yml | microk8s -n <app_namespace> apply -f -`
 - run `envsubst < ./server/deployment.yml | microk8s -n <app_namespace> apply -f -`
 - mapping the ingress hosts into the known hosts file at `/etc/hosts` for instance, 
     ```
