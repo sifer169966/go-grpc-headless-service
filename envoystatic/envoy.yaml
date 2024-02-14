@@ -1,13 +1,19 @@
 admin:
   access_log_path: /tmp/admin_access.log
   address:
-    socket_address: { address: 0.0.0.0, port_value: 9901 }
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 9901
 
 static_resources:
   listeners:
   - name: listener_0
     address:
-      socket_address: { address: 0.0.0.0, port_value: 10000 }
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 10000
     filter_chains:
     - filters:
       - name: envoy.http_connection_manager
@@ -32,4 +38,12 @@ static_resources:
     lb_policy: ROUND_ROBIN
     dns_lookup_family: V4_ONLY
     http2_protocol_options: { }
-    hosts: [{ socket_address: { address: go-grpc-headless-service-server.demo-headless.svc.cluster.local, port_value: 8080 }}]
+    load_assignment:
+      cluster_name: bookstore-service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: go-grpc-headless-service-server.demo-headless.svc.cluster.local
+                port_value: 8080
