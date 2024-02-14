@@ -38,6 +38,10 @@ spec:
           periodSeconds: 10
       - name: envoy-proxy
         image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-envoystatic/dev:latest
+        imagePullPolicy: Always
+        ports:
+          - name: envoy-port
+            containerPort: 10000
 
 
 ---
