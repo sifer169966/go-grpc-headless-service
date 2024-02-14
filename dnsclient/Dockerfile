@@ -14,7 +14,7 @@ ADD . ./
 RUN ls -a
 
 # Build App
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o demo-client ./client/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o demo-client ./dnsclient/main.go
 
 # Defining App image
 FROM alpine:3.17 as release
