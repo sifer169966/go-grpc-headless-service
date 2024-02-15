@@ -40,10 +40,10 @@ static_resources:
               routes:
               - match: { prefix: "/main.DeviceInteractionService" }
                 route: { cluster: device_interaction_grpc_service }
-        http_filters:
-          - name: envoy.filters.http.router
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          http_filters:
+            - name: envoy.filters.http.router
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
   - name: device_interaction_grpc_service
     connect_timeout: 5s
