@@ -36,7 +36,6 @@ runs:
             echo "Error: Unable to determine the version."
             exit 1
         fi
-
         # build in context images
         docker build --no-cache --progress=plain \
         -t "${{ inputs.image-url }}:$tag_name" \
