@@ -4,6 +4,7 @@
 - [Prerequisite](#prerequisite)
   - [setup a `microk8s` cluster](#setup-a-microk8s-cluster)
   - [setup environment](#setup-environment)
+  - [setup repository & workflows](#setup-repository--workflows)
 - [Example 1: Round Robin Loadbalancing with gRPC's built-in loadbalancing policy](#example-1-round-robin-loadbalancing-with-grpcs-built-in-loadbalancing-policy)
 
 
@@ -39,6 +40,13 @@ This demo uses GCR as a private registry, so, we have to export some variables f
 - `export ARTIFACT_REGION=<REGION>`
 - `export ARTIFACT_PROJECT_ID=<PROJECT_ID>`
 
+## setup repository & workflows
+- Go to Settings -> Environments then added these variables 
+    - `ARTIFACT_PROJECT_ID` put your projectID into this fied as a `Secrets`
+    - `GCR_CREDENTIAL` put your service account with base64 encoded as a `Secrets`
+    - `ARTIFACT_REGION` put your target region as a `Variables`
+
+**_NOTE_**: `GCR_CREDENTIAL` permission to push an artifact to the registry is needed
 
 # Example 1: Retreive IPs via DNS and use Round Robin Loadbalancing with gRPC's built-in load-balancing policy
 - deploy ingress by applying `microk8s apply -f ./dnsclient/ingress.yml -n <app_namespace>`
