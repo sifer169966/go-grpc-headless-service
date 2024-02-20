@@ -19,7 +19,7 @@
 - install `microk8s` on your device
 - run `microk8s enable metallb`
 - run `microk8s enable ingress`
-- run `microk8s apply -f ingress-lb-service.yml`
+- run `microk8s kubectl apply -f ingress-lb-service.yml`
 - setup private registry
     - `vim /var/snap/microk8s/current/args/containerd-template.toml`
     - add this section at the end of file
