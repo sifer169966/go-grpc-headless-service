@@ -9,5 +9,5 @@ export let options = {
 };
 
 export default function() {
-  http.get('http://go-grpc-dnsclient.demo/try');
+  http.get('http://go-grpc-defaultclient-with-envoy.demo/try');
 }
