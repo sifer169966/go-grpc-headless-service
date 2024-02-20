@@ -58,5 +58,5 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: go-grpc-headless-service-server.demo-headless.svc.cluster.local
+                address: go-grpc-headless-service-server.demo.svc.cluster.local
                 port_value: 8080
