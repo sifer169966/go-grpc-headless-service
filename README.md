@@ -7,13 +7,18 @@
   - [setup repository & workflows](#setup-repository--workflows)
 - [Example 1: Round Robin Loadbalancing with gRPC's built-in loadbalancing policy](#example-1-round-robin-loadbalancing-with-grpcs-built-in-loadbalancing-policy)
 
+# Area of problem
+gRPC is over HTTP2 by default(HTTP3 is coming), as we generally know that HTTP2 uses the concept of stream, which means we have a single connection that handles multiple requests by multiplexing/demultiplexing, this reduces the overhead of establishing a new connection every time we make an HTTP request. Since we have only one connection, in order to handle a bunch of requests, to balance the load we have to look at the L7 but our applications are running on k8s environment, and the default service kind deployment uses L4 to balance the loads
 
+# Solution
+figure out a way to deal with L7 load-balancing
 
 # Demo Environment
 - VM Instance on GCP
 - Machine type `e2-standard-4`
 - CPU Architecture `x86/64`
 - OS Ubuntu `20.04-focal-v20240125`
+
 # Prerequisite
 ## setup a `microk8s` cluster
 - install `microk8s` on your device
