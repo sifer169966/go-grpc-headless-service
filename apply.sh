@@ -3,5 +3,5 @@
 DIR=$1
 
 for file in $DIR/*.yml; do
-  envsubst < "$file" | microk8s kubectl apply -f -
+  envsubst < "$file" | microk8s kubectl apply -n demo -f -
 done
