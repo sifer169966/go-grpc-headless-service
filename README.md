@@ -30,15 +30,10 @@ figure out a way to deal with L7 load-balancing
     - add this section at the end of file
     ```
     # private repository
-    [plugins.cri.registry]
-        [plugins.cri.registry.mirrors]
-            [plugins.cri.registry.mirrors."<REGISTRY_DOMAIN>"]
-                endpoint = ["https://<REGISTRY_DOMAIN>"]
-    [plugins.cri.registry.auths]
-        [plugins.cri.registry.auths."https://<REGISTRY_DOMAIN>"]
-            username = "_json_key_base64"
-            password = "<BASE64_CREDENTAIL_VALUE>"
-            email = "example@gmail.com"
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."<REGISTRY_DOMAIN_NAME>".auth]
+    username = "_json_key_base64"
+    password = "<BASE64_CREDENTAIL_CONTENT>"
+    email = "bitkuber@example.com"
     ```
 ## setup environment
 This demo uses GCR as a private registry, so, we have to export some variables for the deployment files
