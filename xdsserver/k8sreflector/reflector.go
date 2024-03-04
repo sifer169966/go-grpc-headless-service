@@ -43,8 +43,5 @@ func (r *Reflector) Watch(stopCtx context.Context) error {
 	g.Go(func() error {
 		return r.watchServices(ctx)
 	})
-	// g.Go(func() error {
-	// 	return s.watchEndpoints(ctx)
-	// })
 	return g.Wait()
 }

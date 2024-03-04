@@ -11,11 +11,11 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 ADD . ./
-RUN ls -a
 
 # Build App
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o xdsserver ./xdsserver/main.go
 
+RUN ls -a
 # Defining App image
 FROM alpine:3.17 as release
 
