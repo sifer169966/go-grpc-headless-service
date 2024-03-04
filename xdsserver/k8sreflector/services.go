@@ -42,16 +42,14 @@ func (r *Reflector) watchServices(ctx context.Context) error {
 
 func (r *Reflector) servicesPushFunc(ctx context.Context, refl *k8scache.Reflector) func(items []interface{}) {
 	return func(services []interface{}) {
-		// if refl == nil {
-		// 	klog.Warning("reflector is not ready yet")
-		// 	return
-		// }
-		latestVersion := "1.10"
-		klog.Infoln("reflector is ready")
-		// latestVersion := refl.LastSyncResourceVersion()
-		svcs := sliceToServices(services)
-		res := servicesToResources(svcs)
-		r.snap.Set(ctx, latestVersion, res)
+		if refl == nil {
+			klog.Warning("reflector is not ready yet")
+		} else {
+			latestVersion := refl.LastSyncResourceVersion()
+			svcs := sliceToServices(services)
+			res := servicesToResources(svcs)
+			r.snap.Set(ctx, latestVersion, res)
+		}
 	}
 }
 
