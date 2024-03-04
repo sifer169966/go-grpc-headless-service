@@ -7,6 +7,7 @@ import (
 	"github.com/sifer169966/go-grpc-client-lb/xdsserver/snapshots"
 	"golang.org/x/sync/errgroup"
 	"k8s.io/client-go/kubernetes"
+	k8scache "k8s.io/client-go/tools/cache"
 )
 
 type ReflectorOptions func(r *Reflector)
@@ -19,6 +20,7 @@ func WithResyncPeriod(d time.Duration) ReflectorOptions {
 
 type Reflector struct {
 	k8sClient    kubernetes.Interface
+	k8sRefl      *k8scache.Reflector
 	resyncPeriod time.Duration
 	// not thread-safe
 	lastSnapshotSum uint64

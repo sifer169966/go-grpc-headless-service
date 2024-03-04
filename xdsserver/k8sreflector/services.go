@@ -24,9 +24,8 @@ import (
 )
 
 func (r *Reflector) watchServices(ctx context.Context) error {
-	var refl *k8scache.Reflector
-	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx, refl), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
-	refl = k8scache.NewReflector(&k8scache.ListWatch{
+	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
+	r.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			return r.k8sClient.CoreV1().Services("").List(ctx, options)
 		},
@@ -34,22 +33,22 @@ func (r *Reflector) watchServices(ctx context.Context) error {
 			return r.k8sClient.CoreV1().Services("").Watch(ctx, options)
 		},
 	}, &corev1.Service{}, store, r.resyncPeriod)
-
-	refl.Run(ctx.Done())
+	r.k8sRefl.Run(ctx.Done())
 	klog.Warning("reflector is stopped")
 	return nil
 }
 
-func (r *Reflector) servicesPushFunc(ctx context.Context, refl *k8scache.Reflector) func(items []interface{}) {
+func (r *Reflector) servicesPushFunc(ctx context.Context) func(items []interface{}) {
 	return func(services []interface{}) {
-		if refl == nil {
+		if r.k8sRefl == nil {
 			klog.Warning("reflector is not ready yet")
-		} else {
-			latestVersion := refl.LastSyncResourceVersion()
-			svcs := sliceToServices(services)
-			res := servicesToResources(svcs)
-			r.snap.Set(ctx, latestVersion, res)
+			return
 		}
+		latestVersion := r.k8sRefl.LastSyncResourceVersion()
+		svcs := sliceToServices(services)
+		res := servicesToResources(svcs)
+		r.snap.Set(ctx, latestVersion, res)
+
 	}
 }
 
