@@ -2,11 +2,12 @@ name: Pipeline for DEV environment
 on:
   push:
     paths:
-        - defaultclient/**
-        - .github/**
+      - defaultclient/**
+      - .github/actions/**
+      - .github/defaultclient_dev.yml
     branches:
-        - develop
-        - master
+      - develop
+      - master
 env:
   APP_NAME: go-grpc-defaultclient
 
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-        APP_ENV: dev
+      APP_ENV: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,7 +25,7 @@ jobs:
           persist-credentials: false
       - name: Build and publish image
         id: build-publish-image
-        uses:  ./.github/actions/build_deploy_image
+        uses: ./.github/actions/build_deploy_image
         with:
           environment: ${{ env.APP_ENV }}
           docker-file: ${{ github.workspace }}/defaultclient/Dockerfile

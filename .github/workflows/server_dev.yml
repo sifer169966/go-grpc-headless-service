@@ -1,12 +1,13 @@
 name: Pipeline for DEV environment
 on:
-    push:
-      paths:
-          - server/**
-          - .github/**
-      branches:
-          - develop
-          - master
+  push:
+    paths:
+      - server/**
+      - .github/actions/**
+      - .github/server_dev.yml
+    branches:
+      - develop
+      - master
 env:
   APP_NAME: go-grpc-headless-service-server
 
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-        APP_ENV: dev
+      APP_ENV: dev
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,11 +25,11 @@ jobs:
           persist-credentials: false
       - name: Build and publish image
         id: build-publish-image
-        uses:  ./.github/actions/build_deploy_image
+        uses: ./.github/actions/build_deploy_image
         with:
-            environment: ${{ env.APP_ENV }}
-            docker-file: ${{ github.workspace }}/server/Dockerfile
-            docker-context: ${{ github.workspace }}
-            base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
-            image-url: ${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
-            gcr-credential: ${{ secrets.GCR_CREDENTIAL }}
+          environment: ${{ env.APP_ENV }}
+          docker-file: ${{ github.workspace }}/server/Dockerfile
+          docker-context: ${{ github.workspace }}
+          base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
+          image-url: ${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
+          gcr-credential: ${{ secrets.GCR_CREDENTIAL }}
