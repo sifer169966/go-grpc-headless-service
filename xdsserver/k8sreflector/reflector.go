@@ -25,9 +25,10 @@ type Reflector struct {
 	snap            snapshots.SnapshotSetter
 }
 
-func New(s snapshots.SnapshotSetter, opts ...ReflectorOptions) *Reflector {
+func New(s snapshots.SnapshotSetter, c kubernetes.Interface, opts ...ReflectorOptions) *Reflector {
 	refl := &Reflector{
-		snap: s,
+		snap:      s,
+		k8sClient: c,
 	}
 	for _, opt := range opts {
 		opt(refl)

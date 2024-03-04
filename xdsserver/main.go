@@ -12,12 +12,22 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
 )
 
 func main() {
 	snap := snapshots.New()
-	refl := k8sreflector.New(snap)
+	clientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(clientcmd.NewDefaultClientConfigLoadingRules(), nil).ClientConfig()
+	if err != nil {
+		klog.Fatal("could not create k8s client configuration: ", err)
+	}
+	k8sClient, err := kubernetes.NewForConfig(clientConfig)
+	if err != nil {
+		klog.Fatal("could not create k8s client: ", err)
+	}
+	refl := k8sreflector.New(snap, k8sClient)
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		err := refl.Watch(ctx)
