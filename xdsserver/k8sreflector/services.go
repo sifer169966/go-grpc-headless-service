@@ -66,6 +66,7 @@ func servicesToResources(svcs []*corev1.Service) []types.Resource {
 // creating lds, rds, and cds resources from k8s service
 func serviceToResources(out []types.Resource, svc *corev1.Service) {
 	router, _ := anypb.New(&routerv3.Router{})
+	klog.Infof("%+v", svc)
 	serviceFullName := fmt.Sprintf("%s.%s", svc.Name, svc.Namespace)
 	for _, port := range svc.Spec.Ports {
 		targetHostPort := net.JoinHostPort(serviceFullName, port.Name)
