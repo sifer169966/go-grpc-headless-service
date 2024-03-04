@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grcp-xdsserver
+  name: grpc-xdsserver
   labels:
-    app.kubernetes.io/name: grcp-xdsserver
-    name: grcp-xdsserver
+    app.kubernetes.io/name: grpc-xdsserver
+    name: grpc-xdsserver
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app.kubernetes.io/name: grcp-xdsserver
+      app.kubernetes.io/name: grpc-xdsserver
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: grcp-xdsserver
+        app.kubernetes.io/name: grpc-xdsserver
     spec:
       restartPolicy: Always
       containers:
-      - name: grcp-xdsserver
+      - name: grpc-xdsserver
         image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-xdsserver/dev:latest
         imagePullPolicy: Always
         ports:
@@ -34,13 +34,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: grcp-xdsserver
+  name: grpc-xdsserver
   labels:
-    app.kubernetes.io/name: grcp-xdsserver
+    app.kubernetes.io/name: grpc-xdsserver
 spec:
   clusterIP: None
   selector:
-    app.kubernetes.io/name: grcp-xdsserver
+    app.kubernetes.io/name: grpc-xdsserver
   ports:
   - name: http
     port: 80
