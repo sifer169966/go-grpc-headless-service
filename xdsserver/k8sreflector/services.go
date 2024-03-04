@@ -36,6 +36,7 @@ func (r *Reflector) watchServices(ctx context.Context) error {
 	}, &corev1.Service{}, store, r.resyncPeriod)
 
 	refl.Run(ctx.Done())
+	klog.Warning("reflector is stopped")
 	return nil
 }
 
