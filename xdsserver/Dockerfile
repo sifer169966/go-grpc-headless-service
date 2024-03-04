@@ -13,7 +13,7 @@ RUN go mod download
 ADD . ./
 
 # Build App
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o xdsserver ./xdsserver/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o .bin/xdsserver ./xdsserver/main.go
 
 RUN ls -a
 # Defining App image
@@ -22,7 +22,7 @@ FROM alpine:3.17 as release
 RUN apk add --no-cache --update ca-certificates
 
 # Copy App binary to image
-COPY --from=builder /app/xdsserver /app/cmd/
+COPY --from=builder /app/.bin/xdsserver /app/cmd/
 RUN chmod +x /app/cmd/xdsserver
 
 ARG NONROOT_GROUP=nonroot-group
