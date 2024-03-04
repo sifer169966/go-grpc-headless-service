@@ -45,6 +45,7 @@ func (r *Reflector) servicesPushFunc(ctx context.Context, refl *k8scache.Reflect
 			klog.Warning("reflector is not ready yet")
 			return
 		}
+		klog.Infoln("reflector is ready")
 		latestVersion := refl.LastSyncResourceVersion()
 		svcs := sliceToServices(services)
 		res := servicesToResources(svcs)
