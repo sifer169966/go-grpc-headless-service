@@ -18,7 +18,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: grcp-xdsserver
-        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grcp-xdsserver/dev:latest
+        image: ${ARTIFACT_REGION}-docker.pkg.dev/${ARTIFACT_PROJECT_ID}/grpc-xdsserver/dev:latest
         imagePullPolicy: Always
         ports:
           - name: tcp
