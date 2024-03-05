@@ -31,13 +31,13 @@ func main() {
 		klog.Fatal("could not create k8s client: ", err)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	stopCtx, stop := context.WithCancel(context.Background())
 	refl := k8sreflector.New(snap, k8sClient)
 	grpcSrv := grpc.NewServer()
 	healthSrv := health.NewServer()
-	xdsSrv := xds.NewServer(ctx, snap.MuxCache(), callbacks.New())
+	xdsSrv := xds.NewServer(stopCtx, snap.MuxCache(), callbacks.New())
 	go func() {
-		err := refl.Watch(ctx)
+		err := refl.Watch(stopCtx)
 		if err != nil {
 			klog.Fatal(err)
 		}
@@ -60,7 +60,7 @@ func main() {
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigchan
 	klog.Infoln("server is shutting down...")
-	cancel()
+	stop()
 	healthSrv.Shutdown()
 	grpcSrv.GracefulStop()
 	lis.Close()
