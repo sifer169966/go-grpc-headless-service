@@ -44,8 +44,9 @@ spec:
           periodSeconds: 10
       volumes:
         - name: xds_bootstrap
-          hostPath: /home/cireader258/xds_bootstrap
-          type: Directory
+          hostPath:
+            path: /home/cireader258/xds_bootstrap
+            type: Directory
 
 
 ---
