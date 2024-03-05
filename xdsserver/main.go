@@ -23,6 +23,7 @@ import (
 
 func main() {
 	klog.InitFlags(nil)
+	defer klog.Flush()
 	flag.Parse()
 	snap := snapshots.New()
 	k8sClientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(clientcmd.NewDefaultClientConfigLoadingRules(), nil).ClientConfig()
