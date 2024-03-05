@@ -23,32 +23,39 @@ import (
 	"k8s.io/klog/v2"
 )
 
+type servicesReflector struct {
+	k8sRefl *k8scache.Reflector
+
+	// not thread-safe
+	lastSnapshotSum uint64
+}
+
 func (r *Reflector) watchServices(ctx context.Context) error {
 	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
-	r.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
+	r.svc.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			return r.k8sClient.CoreV1().Services("").List(ctx, options)
 		},
 		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 			return r.k8sClient.CoreV1().Services("").Watch(ctx, options)
 		},
-	}, &corev1.Service{}, store, r.resyncPeriod)
-	r.k8sRefl.Run(ctx.Done())
-	klog.Warning("reflector is stopped")
+	}, &corev1.Service{}, store, r.svc.resyncPeriod)
+	r.svc.k8sRefl.Run(ctx.Done())
+	klog.Warning("services reflector has been stopped")
 	return nil
 }
 
-func (r *Reflector) servicesPushFunc(ctx context.Context) func(items []interface{}) {
-	return func(services []interface{}) {
-		if r.k8sRefl == nil {
+func (r *Reflector) servicesPushFunc(ctx context.Context) func(v []interface{}) {
+	return func(v []interface{}) {
+		if r.svc.k8sRefl == nil {
 			klog.Warning("reflector is not ready yet")
 			return
 		}
-		latestVersion := r.k8sRefl.LastSyncResourceVersion()
-		svcs := sliceToServices(services)
+		latestVersion := r.svc.k8sRefl.LastSyncResourceVersion()
+		svcs := sliceToServices(v)
 		res := servicesToResources(svcs)
 		r.snap.Set(ctx, latestVersion, res)
-
+		klog.Infof("set snapshot version to %s from servicesPushFunc()", latestVersion)
 	}
 }
 
@@ -56,28 +63,27 @@ func (r *Reflector) servicesPushFunc(ctx context.Context) func(items []interface
 // creating lds, rds, and cds resources from k8s services
 func servicesToResources(svcs []*corev1.Service) []types.Resource {
 	var out []types.Resource
+	klog.Infof("\ndebug services: %+v\n", svcs)
 	for _, svc := range svcs {
-		serviceToResources(out, svc)
+		serviceToOutResources(out, svc)
 	}
 	return out
 }
 
-// serviceToResources ...
-// creating lds, rds, and cds resources from k8s service
-func serviceToResources(out []types.Resource, svc *corev1.Service) {
+// serviceToOutResources ...
+// push lds, rds, and cds resources from k8s service to `out`
+func serviceToOutResources(out []types.Resource, svc *corev1.Service) {
 	router, _ := anypb.New(&routerv3.Router{})
-	klog.Info("service resoource triggered")
-	klog.Infof("%+v", svc)
-	serviceFullName := fmt.Sprintf("%s.%s", svc.Name, svc.Namespace)
+	host := fmt.Sprintf("%s.%s", svc.Name, svc.Namespace)
 	for _, port := range svc.Spec.Ports {
-		targetHostPort := net.JoinHostPort(serviceFullName, port.Name)
-		targetHostPortNumber := net.JoinHostPort(serviceFullName, strconv.Itoa(int(port.Port)))
-		routeConfig := &routev3.RouteConfiguration{
-			Name: targetHostPortNumber,
+		hostWithPortName := net.JoinHostPort(host, port.Name)
+		hostWithPortNumber := net.JoinHostPort(host, strconv.Itoa(int(port.Port)))
+		rds := &routev3.RouteConfiguration{
+			Name: hostWithPortNumber,
 			VirtualHosts: []*routev3.VirtualHost{
 				{
-					Name:    targetHostPort,
-					Domains: []string{serviceFullName, targetHostPort, targetHostPortNumber, svc.Name},
+					Name:    hostWithPortName,
+					Domains: []string{host, hostWithPortName, hostWithPortNumber, svc.Name},
 					Routes: []*routev3.Route{{
 						Name: "default",
 						Match: &routev3.RouteMatch{
@@ -86,7 +92,7 @@ func serviceToResources(out []types.Resource, svc *corev1.Service) {
 						Action: &routev3.Route_Route{
 							Route: &routev3.RouteAction{
 								ClusterSpecifier: &routev3.RouteAction_Cluster{
-									Cluster: targetHostPort,
+									Cluster: hostWithPortName,
 								},
 							},
 						},
@@ -95,7 +101,7 @@ func serviceToResources(out []types.Resource, svc *corev1.Service) {
 			},
 		}
 
-		manager, _ := anypb.New(&managerv3.HttpConnectionManager{
+		hcm, _ := anypb.New(&managerv3.HttpConnectionManager{
 			HttpFilters: []*managerv3.HttpFilter{
 				{
 					Name: wellknown.Router,
@@ -105,19 +111,19 @@ func serviceToResources(out []types.Resource, svc *corev1.Service) {
 				},
 			},
 			RouteSpecifier: &managerv3.HttpConnectionManager_RouteConfig{
-				RouteConfig: routeConfig,
+				RouteConfig: rds,
 			},
 		})
 
-		svcListener := &listenerv3.Listener{
-			Name: targetHostPortNumber,
+		lds := &listenerv3.Listener{
+			Name: hostWithPortNumber,
 			ApiListener: &listenerv3.ApiListener{
-				ApiListener: manager,
+				ApiListener: hcm,
 			},
 		}
 
-		svcCluster := &clusterv3.Cluster{
-			Name:                 targetHostPort,
+		cds := &clusterv3.Cluster{
+			Name:                 hostWithPortName,
 			ClusterDiscoveryType: &clusterv3.Cluster_Type{Type: clusterv3.Cluster_EDS},
 			LbPolicy:             clusterv3.Cluster_ROUND_ROBIN,
 			EdsClusterConfig: &clusterv3.Cluster_EdsClusterConfig{
@@ -128,14 +134,14 @@ func serviceToResources(out []types.Resource, svc *corev1.Service) {
 				},
 			},
 		}
-		out = append(out, svcListener, routeConfig, svcCluster)
+		out = append(out, lds, rds, cds)
 	}
 }
 
-func sliceToServices(services []interface{}) []*corev1.Service {
-	out := make([]*corev1.Service, len(services))
-	for i, v := range services {
-		out[i] = v.(*corev1.Service)
+func sliceToServices(svcs []interface{}) []*corev1.Service {
+	out := make([]*corev1.Service, len(svcs))
+	for i, svc := range svcs {
+		out[i] = svc.(*corev1.Service)
 	}
 	return out
 }

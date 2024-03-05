@@ -12,19 +12,36 @@ import (
 
 type ReflectorOptions func(r *Reflector)
 
-func WithResyncPeriod(d time.Duration) ReflectorOptions {
+func WithServiceResyncPeriod(d time.Duration) ReflectorOptions {
 	return func(r *Reflector) {
-		r.resyncPeriod = d
+		r.svc.resyncPeriod = d
+	}
+}
+
+func WithEndpointResyncPeriod(d time.Duration) ReflectorOptions {
+	return func(r *Reflector) {
+		r.ep.resyncPeriod = d
 	}
 }
 
 type Reflector struct {
-	k8sClient    kubernetes.Interface
-	k8sRefl      *k8scache.Reflector
-	resyncPeriod time.Duration
+	k8sClient kubernetes.Interface
+	snap      snapshots.SnapshotSetter
+	// services reflector
+	svc watcher
+	// endpoints reflector
+	ep watcher
+}
+
+type watcher struct {
+	k8sRefl *k8scache.Reflector
 	// not thread-safe
 	lastSnapshotSum uint64
-	snap            snapshots.SnapshotSetter
+	watcherConfig
+}
+
+type watcherConfig struct {
+	resyncPeriod time.Duration
 }
 
 func New(s snapshots.SnapshotSetter, c kubernetes.Interface, opts ...ReflectorOptions) *Reflector {
@@ -35,16 +52,25 @@ func New(s snapshots.SnapshotSetter, c kubernetes.Interface, opts ...ReflectorOp
 	for _, opt := range opts {
 		opt(refl)
 	}
-	if refl.resyncPeriod == 0 {
-		refl.resyncPeriod = 5 * time.Minute
-	}
+	setDefaultWatcherConfig(&refl.svc, &refl.ep)
 	return refl
+}
+
+func setDefaultWatcherConfig(w ...*watcher) {
+	for i := range w {
+		if w[i].resyncPeriod == 0 {
+			w[i].resyncPeriod = 5 * time.Minute
+		}
+	}
 }
 
 func (r *Reflector) Watch(stopCtx context.Context) error {
 	g, ctx := errgroup.WithContext(stopCtx)
 	g.Go(func() error {
 		return r.watchServices(ctx)
+	})
+	g.Go(func() error {
+		return r.watchEndpoints(ctx)
 	})
 	return g.Wait()
 }
