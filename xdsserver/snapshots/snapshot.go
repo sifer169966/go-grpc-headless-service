@@ -65,6 +65,10 @@ func New() *Snapshot {
 	}
 }
 
+func (s *Snapshot) MuxCache() *cachev3.MuxCache {
+	return &s.muxCache
+}
+
 // Set ...
 // set the snapshot for lds, rds, cds and the separate snapshot for eds
 func (s *Snapshot) Set(ctx context.Context, version string, res []types.Resource) {
