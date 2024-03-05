@@ -12,6 +12,7 @@ import (
 func New() xds.CallbackFuncs {
 	return xds.CallbackFuncs{
 		StreamOpenFunc: func(ctx context.Context, streamID int64, typeURL string) error {
+			klog.Info("open=================================DEBUG=================================")
 			klog.V(4).InfoS("StreamOpen", "streamID", streamID, "type", typeURL)
 			return nil
 		},
@@ -26,6 +27,7 @@ func New() xds.CallbackFuncs {
 			klog.V(4).InfoS("DeltaStreamClosed", "streamID", streamID)
 		},
 		StreamRequestFunc: func(streamID int64, request *discoverygrpc.DiscoveryRequest) error {
+			klog.Info("request=================================DEBUG=================================")
 			klog.V(4).InfoS("StreamRequest", "streamID", streamID, "request", request)
 			return nil
 		},
