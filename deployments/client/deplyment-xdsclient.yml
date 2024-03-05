@@ -24,7 +24,7 @@ spec:
           - name: tcp
             containerPort: 8080
         volumeMounts:
-          - name: xds_bootstrap
+          - name: xds-bootstrap
             mountPath: /app/xds_bootstrap
             readOnly: true
         env:
@@ -43,7 +43,7 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
       volumes:
-        - name: xds_bootstrap
+        - name: xds-bootstrap
           hostPath:
             path: /home/cireader258/xds_bootstrap
             type: Directory
