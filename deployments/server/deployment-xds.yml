@@ -23,7 +23,8 @@ spec:
         ports:
           - name: tcp
             containerPort: 9090
-        args: ["-v", "=", "4"]
+        command: ["cmd/xdsserver"]
+        args: ["-v=4"]
 
         livenessProbe:
          grpc:
