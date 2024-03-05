@@ -24,6 +24,7 @@ import (
 )
 
 func (r *Reflector) watchServices(ctx context.Context) error {
+	klog.Info("run watch services")
 	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
 	r.svc.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
