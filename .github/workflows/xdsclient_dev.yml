@@ -2,7 +2,7 @@ name: Pipeline for DEV environment
 on:
   push:
     paths:
-      - dnsclient/**
+      - xdsclient/**
       - .github/actions/**
       - .github/xdsclient_dev.yml
     branches:
