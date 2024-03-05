@@ -23,6 +23,10 @@ spec:
         ports:
           - name: tcp
             containerPort: 8080
+        volumeMounts:
+          - name: xds_bootstrap
+            mountPath: /app/xds_bootstrap
+            readOnly: true
         env:
           - name: APP_REST_PORT
             value: "8080"
@@ -30,12 +34,18 @@ spec:
             value: "go-grpc-headless-service-server.demo"
           - name: GRPC_CLIENT_SERVER_PORT
             value: "8080"
+          - name: GRPC_XDS_BOOTSTRAP
+            value: /app/xds_bootstrap/bootstrap.json
         livenessProbe:
           httpGet:
             path: /healthz
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
+      volumes:
+        - name: xds_bootstrap
+          hostPath: /home/cireader258/xds_bootstrap
+          type: Directory
 
 
 ---
