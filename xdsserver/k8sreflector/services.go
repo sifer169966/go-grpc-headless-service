@@ -33,6 +33,7 @@ func (r *Reflector) watchServices(ctx context.Context) error {
 			return r.k8sClient.CoreV1().Services("").Watch(ctx, options)
 		},
 	}, &corev1.Service{}, store, r.svc.resyncPeriod)
+	klog.Info("run services")
 	r.svc.k8sRefl.Run(ctx.Done())
 	klog.Warning("services reflector has been stopped")
 	return nil
