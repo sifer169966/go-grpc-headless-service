@@ -1,0 +1,35 @@
+name: Pipeline for DEV environment
+on:
+  push:
+    paths:
+      - dnsclient/**
+      - .github/actions/**
+      - .github/xdsclient_dev.yml
+    branches:
+      - develop
+      - master
+env:
+  APP_NAME: go-grpc-xdsclient
+
+jobs:
+  create_app_artifacts:
+    name: The entry point to trigger related jobs to satisfy this pipeline
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      APP_ENV: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Build and publish image
+        id: build-publish-image
+        uses: ./.github/actions/build_deploy_image
+        with:
+          environment: ${{ env.APP_ENV }}
+          docker-file: ${{ github.workspace }}/xdsclient/Dockerfile
+          docker-context: ${{ github.workspace }}
+          base-repository-url: https://${{ vars.ARTIFACT_REGION }}-docker.pkg.dev
+          image-url: ${{ vars.ARTIFACT_REGION }}-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.APP_ENV }}
+          gcr-credential: ${{ secrets.GCR_CREDENTIAL }}
