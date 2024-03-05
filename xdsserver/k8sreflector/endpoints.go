@@ -18,7 +18,7 @@ import (
 )
 
 func (r *Reflector) watchEndpoints(ctx context.Context) error {
-	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
+	store := k8scache.NewUndeltaStore(r.endpointsPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
 	r.ep.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			return r.k8sClient.CoreV1().Endpoints("").List(ctx, options)
@@ -42,7 +42,7 @@ func (r *Reflector) endpointsPushFunc(ctx context.Context) func(v []interface{})
 		eps := sliceToEndpoints(v)
 		res := endpointsToResources(eps)
 		r.snap.Set(ctx, latestVersion, res)
-		klog.Infof("set snapshot version to %s from servicesPushFunc()", latestVersion)
+		klog.Infof("set snapshot version to %s from endpointsPushFunc()", latestVersion)
 	}
 }
 
