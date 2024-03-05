@@ -23,6 +23,10 @@ spec:
         ports:
           - name: tcp
             containerPort: 9090
+        env:
+          - name: KLOG_V
+            value: 4
+
         livenessProbe:
          grpc:
            port: 9090
