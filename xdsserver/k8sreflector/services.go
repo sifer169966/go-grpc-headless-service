@@ -65,14 +65,14 @@ func servicesToResources(svcs []*corev1.Service) []types.Resource {
 	var out []types.Resource
 	klog.Infof("\ndebug services: %+v\n", svcs)
 	for _, svc := range svcs {
-		serviceToOutResources(out, svc)
+		serviceToOutResources(&out, svc)
 	}
 	return out
 }
 
 // serviceToOutResources ...
 // push lds, rds, and cds resources from k8s service to `out`
-func serviceToOutResources(out []types.Resource, svc *corev1.Service) {
+func serviceToOutResources(out *[]types.Resource, svc *corev1.Service) {
 	router, _ := anypb.New(&routerv3.Router{})
 	host := fmt.Sprintf("%s.%s", svc.Name, svc.Namespace)
 	for _, port := range svc.Spec.Ports {
@@ -134,7 +134,7 @@ func serviceToOutResources(out []types.Resource, svc *corev1.Service) {
 				},
 			},
 		}
-		out = append(out, lds, rds, cds)
+		*out = append(*out, lds, rds, cds)
 	}
 }
 
