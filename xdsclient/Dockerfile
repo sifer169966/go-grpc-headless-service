@@ -11,7 +11,7 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 ADD . ./
-RUN ls -a
+
 
 # Build App
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -a -o demo-client ./dnsclient/main.go
@@ -24,7 +24,7 @@ RUN apk add --no-cache --update ca-certificates
 # Copy App binary to image
 COPY --from=builder /app/demo-client /app/cmd/
 RUN chmod +x /app/cmd/demo-client
-
+RUN ls -a
 ARG NONROOT_GROUP=nonroot-group
 ARG NONROOT_USER=nonroot-user
 ARG USER_ID=20000
