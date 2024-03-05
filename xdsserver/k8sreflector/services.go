@@ -23,13 +23,6 @@ import (
 	"k8s.io/klog/v2"
 )
 
-type servicesReflector struct {
-	k8sRefl *k8scache.Reflector
-
-	// not thread-safe
-	lastSnapshotSum uint64
-}
-
 func (r *Reflector) watchServices(ctx context.Context) error {
 	store := k8scache.NewUndeltaStore(r.servicesPushFunc(ctx), k8scache.DeletionHandlingMetaNamespaceKeyFunc)
 	r.svc.k8sRefl = k8scache.NewReflector(&k8scache.ListWatch{
@@ -47,6 +40,7 @@ func (r *Reflector) watchServices(ctx context.Context) error {
 
 func (r *Reflector) servicesPushFunc(ctx context.Context) func(v []interface{}) {
 	return func(v []interface{}) {
+		klog.Info("services pushfunc")
 		if r.svc.k8sRefl == nil {
 			klog.Warning("reflector is not ready yet")
 			return
