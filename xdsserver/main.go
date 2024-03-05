@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net"
 	"os"
 	"os/signal"
@@ -22,6 +23,7 @@ import (
 
 func main() {
 	klog.InitFlags(nil)
+	flag.Parse()
 	snap := snapshots.New()
 	k8sClientConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(clientcmd.NewDefaultClientConfigLoadingRules(), nil).ClientConfig()
 	if err != nil {
