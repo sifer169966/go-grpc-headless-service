@@ -23,7 +23,7 @@ spec:
         ports:
           - name: tcp
             containerPort: 9090
-        args: ["-v=4"]
+        args: ["-v", "=", "4"]
 
         livenessProbe:
          grpc:
