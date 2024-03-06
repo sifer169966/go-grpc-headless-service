@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: go-grpc-server
     name: go-grpc-server
 spec:
-  replicas: 6
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: go-grpc-server
