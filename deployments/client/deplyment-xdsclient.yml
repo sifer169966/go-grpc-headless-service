@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: go-grpc-xdsclient
     name: go-grpc-xdsclient
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: go-grpc-xdsclient
@@ -25,7 +25,7 @@ spec:
             containerPort: 8080
         resources:
           requests:
-            cpu: 200m
+            cpu: 1000m
             memory: "64Mi"
         volumeMounts:
           - name: xds-bootstrap
