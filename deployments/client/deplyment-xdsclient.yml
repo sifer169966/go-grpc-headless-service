@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: go-grpc-xdsclient
     name: go-grpc-xdsclient
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: go-grpc-xdsclient
