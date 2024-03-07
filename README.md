@@ -111,17 +111,6 @@ watch microk8s kubectl -n demo logs -f -l app.kubernetes.io/name=go-grpc-headles
 
 <img src="./images/grpc-dns-built-in.jpg" width="375">
 
-1. deploy ingress by applying `microk8s kubectl apply -f ./dnsclient/ingress.yml -n <app_namespace>`
-2. run `envsubst < ./dnsclient/deployment.yml | microk8s kubectl -n <app_namespace> apply -f -`
-3. run `envsubst < ./server/deployment.yml | microk8s kubectl -n <app_namespace> apply -f -`
-4. mapping the ingress hosts into the known hosts file at `/etc/hosts` for instance, 
-    ```
-    127.0.0.1 localhost
-    10.123.1.1 go-grpc-dnsclient.demo
-
-    # 10.123.1.1 is my private network interface that maps with my LB service
-    ```
-
 ## Performance (Approximately)
 1 pod for gRPC Client, 3 pods for gRPC Server
 
