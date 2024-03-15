@@ -16,6 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// main ...
 func main() {
 	config.Init()
 	srv := echo.New()
